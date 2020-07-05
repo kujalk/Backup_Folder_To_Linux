@@ -72,8 +72,8 @@ function upload
             #######################
             #   With Credential   #
             #######################
-            #Set-SCPFile -ComputerName $remote_machine -Credential $credential `
-            #-LocalFile $local_folder -RemotePath $remote_folder -AcceptKey $true -EA Stop
+            Set-SCPFile -ComputerName $remote_machine -Credential $credential `
+            -LocalFile $local_folder -RemotePath $remote_folder -AcceptKey $true -EA Stop
 
             #################
             #   With Key    #
@@ -82,12 +82,16 @@ function upload
             Even with SSH key, the username of the remote server must be supplied as PSCredential object. 
             Since this object can't be created without password argument, creating a dummy password. 
             #>
+            
             $password= ConvertTo-SecureString -String "Null" -AsPlainText -Force
             [pscredential]$user_server= New-Object System.Management.Automation.PSCredential ($username,$password)
 
             Set-SCPFile -ComputerName $remote_machine -Credential $user_server `
             -KeyFile $keyfile -LocalFile $local_folder -RemotePath $remote_folder `
             -AcceptKey $true -EA Stop
+
+            return $true
+            
         } 
         else 
         {
@@ -98,6 +102,7 @@ function upload
     {
         $error_msg="Upload folder has failed $_"
         logging -message $error_msg -level "Error"
+        return $false
     }
 
 }
@@ -112,10 +117,12 @@ function delete_zipfolder
     {
         Remove-Item -path $zipfolder -Confirm:$false -Force -EA Stop
         logging -message "Deleted the Zipped folder from the source location" -level "Info"
+        return $true
     }
     catch 
     {
         logging -message "Error occured while deleting the zipped folder $_" -level "Error"
+        return $false
     }
 }
 
@@ -125,18 +132,44 @@ function delete_zipfolder
 
 try
 {
+    $source_folder="D:\Backup_Scripts\Demo\"
+    $zip_store="D:\Backup_Scripts\"
+    $linux_server="54.251.167.26"
+    #$ssh_key="D:\AWS\jana-ssh.pem"
+    $linux_folder="/home/ec2-user"
+    #$linux_user="ec2-user"
+    $cred=Get-credential
+
     logging -message "Backup Script initiated" -level "Info"
-    $zip_name=compress -sourcepath "D:\Backup_Scripts\Demo\" -destinationpath "D:\Backup_Scripts\"
+
+    #Compress the folder
+    $zip_name=compress -sourcepath $source_folder -destinationpath $zip_store
 
     if($zip_name -ne $null)
     {
-        #$cre=Get-credential
 
         #With SSH key
-        upload -local_folder $zip_name -remote_folder "/home/ec2-user" `
-        -remote_machine "54.251.167.26" -keyfile "D:\AWS\jana-ssh.pem" -username "ec2-user"
+        <#
+        $result=upload -local_folder $zip_name -remote_folder $linux_folder `
+        -remote_machine $linux_server -keyfile $ssh_key -username $linux_user
+        #>
 
-        delete_zipfolder $zip_name
+        #With Username and PAssword
+        $result=upload -local_folder $zip_name -remote_folder $linux_folder `
+        -remote_machine $linux_server -credential $cred
+
+        #Delete zipped folder after upload
+        $del_result=delete_zipfolder $zip_name
+
+        if($result -and $del_result)
+        {
+            logging -message "Script completed successfully" -level "Info"
+        }
+        else 
+        {
+            logging -message "Script does not completed successfully" -level "Warning"    
+        }
+    
     }
     else 
     {
