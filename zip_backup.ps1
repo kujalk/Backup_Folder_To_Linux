@@ -72,8 +72,10 @@ function upload
             #######################
             #   With Credential   #
             #######################
+            <#
             Set-SCPFile -ComputerName $remote_machine -Credential $credential `
             -LocalFile $local_folder -RemotePath $remote_folder -AcceptKey $true -EA Stop
+            #>
 
             #################
             #   With Key    #
@@ -132,13 +134,13 @@ function delete_zipfolder
 
 try
 {
-    $source_folder="D:\Backup_Scripts\Demo\"
+    $source_folder="D:\sample\"
     $zip_store="D:\Backup_Scripts\"
     $linux_server="54.251.167.26"
-    #$ssh_key="D:\AWS\jana-ssh.pem"
+    $ssh_key="D:\AWS\jana-ssh.pem"
     $linux_folder="/home/ec2-user"
-    #$linux_user="ec2-user"
-    $cred=Get-credential
+    $linux_user="ec2-user"
+    #$cred=Get-credential
 
     logging -message "Backup Script initiated" -level "Info"
 
@@ -149,14 +151,16 @@ try
     {
 
         #With SSH key
-        <#
+        
         $result=upload -local_folder $zip_name -remote_folder $linux_folder `
         -remote_machine $linux_server -keyfile $ssh_key -username $linux_user
-        #>
+        
 
-        #With Username and PAssword
+        #With Username and Password
+        <#
         $result=upload -local_folder $zip_name -remote_folder $linux_folder `
         -remote_machine $linux_server -credential $cred
+        #>
 
         #Delete zipped folder after upload
         $del_result=delete_zipfolder $zip_name
