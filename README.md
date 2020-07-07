@@ -17,7 +17,7 @@ Requirements,
     - $ssh_key="D:\AWS\jana-ssh.pem" -> If you want to use SSH key
     - $linux_folder="/home/ec2-user"
     - $linux_user="ec2-user" -> If you want to use SSH key (username to connect with server)
-    - #$cred=Get-credential
+    - $cred=Get-credential -> Only if you want to authenticate with Username and Password
 
 + source folder - Folder you want to take backup (Make sure to include "\" at the end)
 + zip_store - Folder where you want to store the compress folder
