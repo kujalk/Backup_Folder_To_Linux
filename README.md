@@ -10,7 +10,7 @@ Requirements,
 - Open Powershell as Administrator
 - Install-Module -Name Posh-SSH
 
-2. Change the following parameters inside the script [Line no - 135 - 141
+2. Change the following parameters inside the script [Line no - 137 - 143 ]
     - $source_folder="D:\Backup_Scripts\Demo\"
     - $zip_store="D:\Backup_Scripts\"
     - $linux_server="54.251.167.26"
