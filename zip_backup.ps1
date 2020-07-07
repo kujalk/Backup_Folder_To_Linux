@@ -134,10 +134,10 @@ function delete_zipfolder
 
 try
 {
-    $source_folder="D:\sample\"
+    $source_folder="D:\Sample\"
     $zip_store="D:\Backup_Scripts\"
-    $linux_server="54.251.167.26"
-    $ssh_key="D:\AWS\jana-ssh.pem"
+    $linux_server="10.10.41.199"
+    $ssh_key="D:\AWS\janatemp-ssh.pem"
     $linux_folder="/home/ec2-user"
     $linux_user="ec2-user"
     #$cred=Get-credential
